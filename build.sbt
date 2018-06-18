@@ -28,6 +28,8 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic",
   "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
+libraryDependencies += "io.spray" %%  "spray-json" % "1.3.3"
+
 
 // Enable SAM
 scalacOptions := Seq("-Xexperimental", "-unchecked", "-deprecation")

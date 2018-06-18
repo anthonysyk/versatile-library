@@ -1,7 +1,8 @@
-import kafka.KafkaProducerHelper
+package kafka
+
 import net.manub.embeddedkafka.{EmbeddedKafka, EmbeddedKafkaConfig}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
-import org.apache.kafka.common.serialization.{ByteArraySerializer, Deserializer, StringDeserializer, StringSerializer}
+import org.apache.kafka.common.serialization.{Deserializer, StringDeserializer, StringSerializer}
 import org.scalatest.FunSuite
 
 class LoggerTest extends FunSuite with KafkaProducerHelper[String, String] {
@@ -21,7 +22,7 @@ class LoggerTest extends FunSuite with KafkaProducerHelper[String, String] {
   override val producer: KafkaProducer[String, String] = EmbeddedKafka.aKafkaProducer[String](new StringSerializer, config)
   override val logsProducer: KafkaProducer[String, String] = EmbeddedKafka.aKafkaProducer[String](new StringSerializer, config)
 
-  test("toto") {
+  test("Test Logging DSL") {
 
     val record = new ProducerRecord[String, String](topic, "this is a message")
 
