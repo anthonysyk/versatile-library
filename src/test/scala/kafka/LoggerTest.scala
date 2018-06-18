@@ -2,12 +2,14 @@ package kafka
 
 import net.manub.embeddedkafka.{EmbeddedKafka, EmbeddedKafkaConfig}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
-import org.apache.kafka.common.serialization.{Deserializer, StringDeserializer, StringSerializer}
+import org.apache.kafka.common.serialization.{Serializer, StringDeserializer, StringSerializer}
 import org.scalatest.FunSuite
 
 class LoggerTest extends FunSuite with KafkaProducerHelper[String, String] {
 
   val topic = "Test"
+  def keySerializer = classOf[StringSerializer].getName
+  def valueSerializer = classOf[StringSerializer].getName
 
   EmbeddedKafka.start()
 
@@ -28,8 +30,6 @@ class LoggerTest extends FunSuite with KafkaProducerHelper[String, String] {
 
     sendEventWithLogs(record)
 
-    implicitly[Deserializer[String]]
-
     val message = EmbeddedKafka.consumeFirstKeyedMessageFrom(topic)
 
     println(message)
@@ -42,8 +42,6 @@ class LoggerTest extends FunSuite with KafkaProducerHelper[String, String] {
     assert(message.productIterator.nonEmpty)
     assert(log.productIterator.nonEmpty)
 
-
   }
-
 
 }

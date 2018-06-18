@@ -1,22 +1,31 @@
 package kafka
 
+import java.util.Properties
+
 import org.apache.kafka.clients.producer._
+import org.apache.kafka.common.serialization.StringSerializer
 
 trait KafkaProducerHelper[K, V] {
 
   val topic: String
+  def keySerializer: String
+  def valueSerializer: String
 
   val logsTopic: String = s"$topic.logs"
-
+  val bootstrapServer: String = "localhost:9092"
   val clientId: String = Seq("Producer", topic).mkString("_")
-  val props = new java.util.Properties()
-  props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
-  props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId)
-  props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerSerializer")
-  props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer")
 
-  val producer = new KafkaProducer[K, V](props)
-  val logsProducer = new KafkaProducer[K, String](props)
+  def createProps(keySer: String, valueSer: String): Properties = {
+    val props = new java.util.Properties()
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer)
+    props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId)
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySer)
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSer)
+    props
+  }
+
+  val producer = new KafkaProducer[K, V](createProps(keySerializer, valueSerializer))
+  val logsProducer = new KafkaProducer[K, String](createProps(keySerializer, classOf[StringSerializer].getName))
 
   private def createLog(record: ProducerRecord[K, V]) = {
     KafkaUtils.createCallbackProducer(
