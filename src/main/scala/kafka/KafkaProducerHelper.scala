@@ -31,7 +31,6 @@ trait KafkaProducerHelper[K, V] {
     KafkaUtils.createCallbackProducer(
       onError = { exception =>
         val errorMessage = s"[Failure] Event with key ${record.key} and value ${record.value()}"
-        println(errorMessage)
         val logRecord = KafkaLog(None, record.topic(), errorMessage, Some(exception.toString)).toRecord(logsTopic, record.key())
         logsProducer.send(logRecord)
       },
