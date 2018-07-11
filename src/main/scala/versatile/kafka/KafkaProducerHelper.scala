@@ -1,4 +1,4 @@
-package kafka
+package versatile.kafka
 
 import java.util.Properties
 

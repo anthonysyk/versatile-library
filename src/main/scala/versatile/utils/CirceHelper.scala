@@ -1,7 +1,6 @@
-package utils
+package versatile.utils
 
-
-import generic.Pure
+import versatile.generic.Pure
 import io.circe.Json
 
 import scala.reflect.ClassTag
@@ -23,6 +22,7 @@ object CirceHelper {
   implicit class RichEitherCirce[L <: io.circe.Error, R](either: Either[L, R]) {
 
     def getRight(implicit pure: Pure[R]): R = either.right.toOption.getOrElse(pure.empty)
+
   }
 
 }

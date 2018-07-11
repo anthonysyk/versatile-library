@@ -1,6 +1,6 @@
 package XMLParser
 
-import data.XMLResponse
+import versatile.data.XMLResponse
 import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._

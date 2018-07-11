@@ -1,4 +1,4 @@
-package kafka
+package versatile.kafka
 
 import io.circe.syntax._
 import org.apache.kafka.clients.producer.ProducerRecord

@@ -1,6 +1,6 @@
 package XMLParser
 
-import data.XMLHelper
+import versatile.data.XMLHelper
 import org.scalatest.FunSuite
 
 class XMLParserTest extends FunSuite {

@@ -1,4 +1,4 @@
-package lang
+package versatile.lang
 
 object ScalaUtils {
 

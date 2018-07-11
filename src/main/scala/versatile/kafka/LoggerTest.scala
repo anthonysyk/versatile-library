@@ -1,4 +1,4 @@
-package kafka
+package versatile.kafka
 
 import net.manub.embeddedkafka.{EmbeddedKafka, EmbeddedKafkaConfig}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}

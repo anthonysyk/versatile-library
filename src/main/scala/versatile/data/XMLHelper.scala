@@ -1,4 +1,4 @@
-package data
+package versatile.data
 
 import io.circe
 import io.circe.generic.auto._
