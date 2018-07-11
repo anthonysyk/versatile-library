@@ -1,6 +1,5 @@
-package versatile.kafka
+package versatile.kafka.serde
 
-import com.lightbend.kafka.scala.streams.{Deserializer, Serializer}
 import io.circe.parser.parse
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
