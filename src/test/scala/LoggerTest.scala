@@ -1,9 +1,8 @@
-package versatile.kafka
-
 import net.manub.embeddedkafka.{EmbeddedKafka, EmbeddedKafkaConfig}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
-import org.apache.kafka.common.serialization.{Serializer, StringDeserializer, StringSerializer}
+import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.scalatest.FunSuite
+import versatile.kafka.KafkaProducerHelper
 
 class LoggerTest extends FunSuite with KafkaProducerHelper[String, String] {
 
