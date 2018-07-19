@@ -13,4 +13,13 @@ object DefaultSerdes {
   implicit val floatSerde: Serde[Float] = Serdes.Float().asInstanceOf[Serde[Float]]
   implicit val doubleSerde: Serde[Double] = Serdes.Double().asInstanceOf[Serde[Double]]
   implicit val integerSerde: Serde[Int] = Serdes.Integer().asInstanceOf[Serde[Int]]
+
+  implicit val stringSerializer = stringSerde.serializer()
+  implicit val integerSerializer = integerSerde.serializer()
+  implicit val byteArraySerializer = byteArraySerde.serializer()
+
+  implicit val stringDeserializer = stringSerde.deserializer()
+  implicit val integerDeserializer = integerSerde.deserializer()
+  implicit val byteArrayDeserializer = byteArraySerde.deserializer()
+
 }

@@ -3,11 +3,19 @@ package versatile.kafka
 import java.util.Properties
 
 import org.apache.kafka.clients.producer._
-import org.apache.kafka.common.serialization.StringSerializer
+import org.apache.kafka.common.serialization.{ByteArraySerializer, Serializer, StringSerializer}
+import org.codehaus.jackson.map.ser.StdSerializers.IntegerSerializer
+import versatile.kafka.serde.DefaultSerdes
 
+/**
+  *
+  * @tparam K : can be any primitive type
+  * @tparam V : should always be either String or Array[Byte]
+  */
 trait KafkaProducerHelper[K, V] {
 
   val topic: String
+
   def keySerializer: String
   def valueSerializer: String
 
@@ -15,7 +23,7 @@ trait KafkaProducerHelper[K, V] {
   val bootstrapServer: String = "localhost:9092"
   val clientId: String = Seq("Producer", topic).mkString("_")
 
-  def createProps(keySer: String, valueSer: String): Properties = {
+  def createProperties(keySer: String, valueSer: String): Properties = {
     val props = new java.util.Properties()
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer)
     props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId)
@@ -24,8 +32,8 @@ trait KafkaProducerHelper[K, V] {
     props
   }
 
-  val producer = new KafkaProducer[K, V](createProps(keySerializer, valueSerializer))
-  val logsProducer = new KafkaProducer[K, String](createProps(keySerializer, classOf[StringSerializer].getName))
+  val producer = new KafkaProducer[K, V](createProperties(keySerializer, valueSerializer))
+  val logsProducer = new KafkaProducer[K, String](createProperties(keySerializer, classOf[StringSerializer].getName))
 
   private def createLog(record: ProducerRecord[K, V]) = {
     KafkaUtils.createCallbackProducer(
@@ -43,5 +51,18 @@ trait KafkaProducerHelper[K, V] {
   }
 
   def sendEventWithLogs(record: ProducerRecord[K, V]): Unit = producer.send(record, createLog(record))
+
+}
+
+object KafkaProducerHelper {
+
+  def createProducer[K,V](topicName: String, bootstrapServerUri: String = "localhost:9092")(implicit keySerializerConverter: SerializerConverter[K], valueSerializerConverter: SerializerConverter[V] ) = {
+    new KafkaProducerHelper[K,V] {
+      override val topic: String = topicName
+      override val bootstrapServer: String = bootstrapServerUri
+      override def keySerializer: String = keySerializerConverter.value
+      override def valueSerializer: String = valueSerializerConverter.value
+    }
+  }
 
 }

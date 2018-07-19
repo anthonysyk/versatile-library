@@ -16,7 +16,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-hive" % sparkV,
   "org.apache.kafka" % "kafka_2.11" % kafkaV,
   "org.apache.kafka" % "kafka-streams" % kafkaV,
-  "net.manub" %% "scalatest-embedded-kafka" % "1.0.0" % Test,
+  "net.manub" %% "scalatest-embedded-kafka" % "1.0.0",
   "com.lightbend" %% "kafka-streams-scala" % kafka_streams_scala_version,
   "com.typesafe.akka" %% "akka-http"   % "10.1.3",
   "com.typesafe.akka" %% "akka-stream" % "2.5.12"
