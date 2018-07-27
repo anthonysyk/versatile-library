@@ -3,21 +3,19 @@ package versatile.kafka
 import java.util.Properties
 
 import org.apache.kafka.clients.producer._
-import org.apache.kafka.common.serialization.{ByteArraySerializer, Serializer, StringSerializer}
-import org.codehaus.jackson.map.ser.StdSerializers.IntegerSerializer
-import versatile.kafka.serde.DefaultSerdes
+import org.apache.kafka.common.serialization.StringSerializer
 
 /**
   *
   * @tparam K : can be any primitive type
   * @tparam V : should always be either String or Array[Byte]
   */
-trait KafkaProducerHelper[K, V] {
+abstract class KafkaProducerHelper[K, V](implicit keySerializerConverter: SerializerConverter[K], valueSerializerConverter: SerializerConverter[V]) {
 
   val topic: String
 
-  def keySerializer: String
-  def valueSerializer: String
+  def keySerializer: String = keySerializerConverter.value
+  def valueSerializer: String = valueSerializerConverter.value
 
   val logsTopic: String = s"$topic.logs"
   val bootstrapServer: String = "localhost:9092"
@@ -51,18 +49,5 @@ trait KafkaProducerHelper[K, V] {
   }
 
   def sendEventWithLogs(record: ProducerRecord[K, V]): Unit = producer.send(record, createLog(record))
-
-}
-
-object KafkaProducerHelper {
-
-  def createProducer[K,V](topicName: String, bootstrapServerUri: String = "localhost:9092")(implicit keySerializerConverter: SerializerConverter[K], valueSerializerConverter: SerializerConverter[V] ) = {
-    new KafkaProducerHelper[K,V] {
-      override val topic: String = topicName
-      override val bootstrapServer: String = bootstrapServerUri
-      override def keySerializer: String = keySerializerConverter.value
-      override def valueSerializer: String = valueSerializerConverter.value
-    }
-  }
 
 }

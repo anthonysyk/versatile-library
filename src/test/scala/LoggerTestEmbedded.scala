@@ -4,26 +4,26 @@ import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializ
 import org.scalatest.FunSuite
 import versatile.kafka.{EmbeddedKafkaHelper, EmbeddedKafkaProducerHelper}
 
-class LoggerTestEmbedded extends FunSuite with EmbeddedKafkaHelper {
+class LoggerTestEmbedded extends FunSuite with EmbeddedKafkaHelper{
 
-  val topic = "Test"
+  val producer = new EmbeddedKafkaProducerHelper[String] {
+    override val topic: String = "Test"
+  }
 
-  override val topics: Seq[String] = topic :: Nil
+  override val topics = producer.topic :: producer.logsTopic :: Nil
 
   startEmbeddedKafka()
-
-  val producer = EmbeddedKafkaProducerHelper.createEmbeddedProducer[String](topic)
 
   implicit val stringSerializer: StringSerializer = new StringSerializer
   implicit val stringDeserializer: StringDeserializer = new StringDeserializer
 
   test("Test Logging DSL") {
 
-    val record = new ProducerRecord[String, String](topic, "this is a message")
+    val record = new ProducerRecord[String, String](producer.topic, "1", "this is a message")
 
     producer.sendEventWithLogs(record)
 
-    val message = EmbeddedKafka.consumeFirstKeyedMessageFrom(topic)
+    val message = EmbeddedKafka.consumeFirstKeyedMessageFrom(producer.topic)
 
     println(message)
 
