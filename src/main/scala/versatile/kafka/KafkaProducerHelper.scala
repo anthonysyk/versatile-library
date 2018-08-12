@@ -17,9 +17,9 @@ abstract class KafkaProducerHelper[K, V](implicit keySerializerConverter: Serial
   def keySerializer: String = keySerializerConverter.value
   def valueSerializer: String = valueSerializerConverter.value
 
-  val logsTopic: String = s"$topic.logs"
-  val bootstrapServer: String = "localhost:9092"
-  val clientId: String = Seq("Producer", topic).mkString("_")
+  lazy val logsTopic: String = s"$topic.logs"
+  lazy val bootstrapServer: String = "localhost:9092"
+  lazy val clientId: String = Seq("Producer", topic).mkString("_")
 
   def createProperties(keySer: String, valueSer: String): Properties = {
     val props = new java.util.Properties()
@@ -37,6 +37,7 @@ abstract class KafkaProducerHelper[K, V](implicit keySerializerConverter: Serial
     KafkaUtils.createCallbackProducer(
       onError = { exception =>
         val errorMessage = s"[Failure] Event with key ${record.key} and value ${record.value()}"
+        println(errorMessage)
         val logRecord = KafkaLog(None, record.topic(), errorMessage, Some(exception.toString)).toRecord(logsTopic, record.key())
         logsProducer.send(logRecord)
       },

@@ -81,6 +81,8 @@ class LoggerTest extends FunSuite {
     assert(message.productIterator.nonEmpty)
     assert(log.productIterator.nonEmpty)
 
+    EmbeddedKafka.stop()
+
   }
 
 }
