@@ -19,21 +19,32 @@ class LoggerTestEmbedded extends FunSuite with EmbeddedKafkaHelper{
 
   test("Test Logging DSL") {
 
-    val record = new ProducerRecord[String, String](producer.topic, "1", "this is a message")
+    val record1 = new ProducerRecord[String, String](producer.topic, "1", "this is a message")
 
-    producer.sendEventWithLogs(record)
+    val record2 = new ProducerRecord[String, String](producer.topic, "2", "this is a message number 2")
 
-    val message = EmbeddedKafka.consumeFirstKeyedMessageFrom(producer.topic)
 
-    println(message)
+    producer.sendEventWithLogs(record1)
 
-    val log = EmbeddedKafka.consumeFirstKeyedMessageFrom(producer.logsTopic)
+    Thread.sleep(1000)
 
-    println(log)
+    producer.sendEventWithLogs(record2)
+
+    val message1 = EmbeddedKafka.consumeFirstKeyedMessageFrom(producer.topic)
+    val message2 = EmbeddedKafka.consumeFirstKeyedMessageFrom(producer.topic)
+
+    println(message1)
+    println(message2)
+
+    val log1 = EmbeddedKafka.consumeFirstKeyedMessageFrom(producer.logsTopic)
+    val log2 = EmbeddedKafka.consumeFirstKeyedMessageFrom(producer.logsTopic)
+
+    println(log1)
+    println(log2)
 
     // TODO: make assertions more precise
-    assert(message.productIterator.nonEmpty)
-    assert(log.productIterator.nonEmpty)
+    assert(message1.productIterator.nonEmpty)
+    assert(log1.productIterator.nonEmpty)
 
     EmbeddedKafka.stop()
 

@@ -37,3 +37,6 @@ libraryDependencies += "io.spray" %%  "spray-json" % "1.3.3"
 
 // Enable SAM
 scalacOptions := Seq("-Xexperimental", "-unchecked", "-deprecation")
+
+// Executer les tests en séquentiel
+parallelExecution in Test := false

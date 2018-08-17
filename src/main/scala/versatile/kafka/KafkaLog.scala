@@ -1,14 +1,18 @@
 package versatile.kafka
 
+import java.time.ZonedDateTime
+import java.util.Date
+
 import io.circe.syntax._
 import org.apache.kafka.clients.producer.ProducerRecord
 
 case class KafkaLog(
-                    offset: Option[Long],
-                    topic: String,
-                    message: String,
-                    exception: Option[String],
-                    isSuccess: Boolean
+                     zone_date_time: String,
+                     offset: Option[Long],
+                     topic: String,
+                     message: String,
+                     exception: Option[String],
+                     isSuccess: Boolean
                    ) {
   def toRecord[K](topic: String, key: K) = new ProducerRecord[K, String](topic, key, this.asJson.noSpaces)
 }
@@ -26,5 +30,7 @@ object KafkaLog {
              topic: String,
              message: String,
              exception: Option[String]
-           ): KafkaLog = new KafkaLog(offset, topic, message, exception, offset.isDefined && exception.isEmpty)
+           ): KafkaLog = new KafkaLog(ZonedDateTime.now().toString, offset, topic, message, exception, offset.isDefined && exception.isEmpty)
 }
+
+
