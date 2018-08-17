@@ -11,6 +11,7 @@ import org.apache.kafka.common.serialization.StringSerializer
 abstract class EmbeddedKafkaProducerHelper[V](implicit valueConverter: SerializerConverter[V]) extends KafkaProducerHelper[String,V] {
 
   override val topic: String
+  override val sender: String
 
   override def keySerializer = classOf[StringSerializer].getName
 

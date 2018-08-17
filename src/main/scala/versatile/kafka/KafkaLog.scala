@@ -1,12 +1,12 @@
 package versatile.kafka
 
 import java.time.ZonedDateTime
-import java.util.Date
 
 import io.circe.syntax._
 import org.apache.kafka.clients.producer.ProducerRecord
 
 case class KafkaLog(
+                     sender: String,
                      zone_date_time: String,
                      offset: Option[Long],
                      topic: String,
@@ -26,11 +26,12 @@ object KafkaLog {
   implicit val decoder: Decoder[KafkaLog] = deriveDecoder[KafkaLog]
 
   def apply(
+             sender: String,
              offset: Option[Long],
              topic: String,
              message: String,
              exception: Option[String]
-           ): KafkaLog = new KafkaLog(ZonedDateTime.now().toString, offset, topic, message, exception, offset.isDefined && exception.isEmpty)
+           ): KafkaLog = new KafkaLog(sender, ZonedDateTime.now().toString, offset, topic, message, exception, offset.isDefined && exception.isEmpty)
 }
 
 

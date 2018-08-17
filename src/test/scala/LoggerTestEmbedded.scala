@@ -4,10 +4,13 @@ import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializ
 import org.scalatest.FunSuite
 import versatile.kafka.{EmbeddedKafkaHelper, EmbeddedKafkaProducerHelper}
 
-class LoggerTestEmbedded extends FunSuite with EmbeddedKafkaHelper{
+class LoggerTestEmbedded extends FunSuite with EmbeddedKafkaHelper {
+
+  final val className: String = this.getClass.getSimpleName
 
   val producer = new EmbeddedKafkaProducerHelper[String] {
     override val topic: String = "Test"
+    override val sender: String = className
   }
 
   override val topics = producer.topic :: producer.logsTopic :: Nil

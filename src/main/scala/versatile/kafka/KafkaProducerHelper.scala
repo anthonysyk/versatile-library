@@ -13,13 +13,14 @@ import org.apache.kafka.common.serialization.StringSerializer
 abstract class KafkaProducerHelper[K, V](implicit keySerializerConverter: SerializerConverter[K], valueSerializerConverter: SerializerConverter[V]) {
 
   val topic: String
+  val sender: String
 
   def keySerializer: String = keySerializerConverter.value
   def valueSerializer: String = valueSerializerConverter.value
 
   lazy val logsTopic: String = s"$topic.logs"
   lazy val bootstrapServer: String = "localhost:9092"
-  lazy val clientId: String = Seq("Producer", topic).mkString("_")
+  lazy val clientId: String = Seq(sender, topic).mkString("_")
 
   def createProperties(keySer: String, valueSer: String): Properties = {
     val props = new java.util.Properties()
@@ -38,12 +39,12 @@ abstract class KafkaProducerHelper[K, V](implicit keySerializerConverter: Serial
       onError = { exception =>
         val errorMessage = s"[Failure] Event with key ${record.key} and value ${record.value()}"
         println(errorMessage)
-        val logRecord = KafkaLog(None, record.topic(), errorMessage, Some(exception.toString)).toRecord(logsTopic, record.key())
+        val logRecord = KafkaLog(sender, None, record.topic(), errorMessage, Some(exception.toString)).toRecord(logsTopic, record.key())
         logsProducer.send(logRecord)
       },
       onSuccess = { metadata =>
         val successMessage = s"[Success] Event with key: ${record.key()} was sent successfully at offset: ${metadata.offset()}"
-        val logRecord = KafkaLog(Some(metadata.offset()), record.topic(), successMessage, None).toRecord(logsTopic, record.key())
+        val logRecord = KafkaLog(sender, Some(metadata.offset()), record.topic(), successMessage, None).toRecord(logsTopic, record.key())
         logsProducer.send(logRecord)
       }
     )

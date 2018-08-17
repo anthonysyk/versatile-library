@@ -51,8 +51,11 @@ class LoggerTest extends FunSuite {
 
   val config: EmbeddedKafkaConfig = EmbeddedKafkaConfig.defaultConfig
 
+  final val className: String = this.getClass.getSimpleName
+
   val producer: KafkaProducerHelper[String, String] = new KafkaProducerHelper[String, String] {
     override val topic: String = "Test"
+    override val sender: String = className
     override val producer: KafkaProducer[String, String] = EmbeddedKafka.aKafkaProducer[String](new StringSerializer, config)
     override val logsProducer: KafkaProducer[String, String] = EmbeddedKafka.aKafkaProducer[String](new StringSerializer, config)
   }
