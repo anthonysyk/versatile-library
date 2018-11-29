@@ -1,4 +1,4 @@
-package versatile.bigdata
+package versatile.spark
 
 
 import org.apache.spark.sql.SparkSession

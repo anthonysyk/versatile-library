@@ -1,4 +1,4 @@
-package versatile.data
+package versatile.xml
 
 import io.circe
 import io.circe.generic.auto._

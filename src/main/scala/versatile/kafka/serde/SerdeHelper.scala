@@ -7,7 +7,7 @@ import org.apache.kafka.common.serialization.Serdes
 
 object SerdeHelper {
 
-  import versatile.utils.CirceHelper._
+  import versatile.json.CirceHelper._
 
   def createSerde[T >: Null](implicit encoder: Encoder[T], decoder: Decoder[T]) = {
     Serdes.serdeFrom[T](getSerializer[T], getDeserializer[T])

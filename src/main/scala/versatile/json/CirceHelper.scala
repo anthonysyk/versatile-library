@@ -1,4 +1,4 @@
-package versatile.utils
+package versatile.json
 
 import versatile.generic.Pure
 import io.circe.Json

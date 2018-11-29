@@ -1,4 +1,4 @@
-package versatile.bigdata
+package versatile.hdfs
 
 import org.apache.hadoop.fs.FileStatus
 import org.apache.spark.sql.SparkSession
