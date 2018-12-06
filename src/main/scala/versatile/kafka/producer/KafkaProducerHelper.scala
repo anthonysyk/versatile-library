@@ -1,9 +1,11 @@
-package versatile.kafka
+package versatile.kafka.producer
 
 import java.util.Properties
 
 import org.apache.kafka.clients.producer._
 import org.apache.kafka.common.serialization.StringSerializer
+import versatile.kafka.models.KafkaLog
+import versatile.kafka.serde.SerializerConverter
 
 /**
   *

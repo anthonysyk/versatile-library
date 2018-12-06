@@ -1,4 +1,4 @@
-package versatile.kafka
+package versatile.kafka.models
 
 import java.time.ZonedDateTime
 

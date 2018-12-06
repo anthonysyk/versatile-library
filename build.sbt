@@ -8,18 +8,17 @@ scalaVersion := "2.11.8"
 
 lazy val sparkV = "2.2.0"
 lazy val kafkaV = "1.0.1"
-val kafka_streams_scala_version = "0.2.1"
 
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkV,
   "org.apache.spark" %% "spark-sql" % sparkV,
   "org.apache.spark" %% "spark-hive" % sparkV,
-  "org.apache.kafka" % "kafka_2.11" % kafkaV,
-  "org.apache.kafka" % "kafka-streams" % kafkaV,
-  "net.manub" %% "scalatest-embedded-kafka" % "1.0.0",
-  "com.lightbend" %% "kafka-streams-scala" % kafka_streams_scala_version,
-  "com.typesafe.akka" %% "akka-http"   % "10.1.3",
-  "com.typesafe.akka" %% "akka-stream" % "2.5.12"
+  "org.apache.kafka" %% "kafka-streams-scala" % "2.0.1",
+  "com.typesafe.akka" %% "akka-http" % "10.1.3",
+  "com.typesafe.akka" %% "akka-stream" % "2.5.12",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
+  "de.heikoseeberger" %% "akka-http-circe" % "1.17.0",
+  "com.twitter" %% "bijection-avro" % "0.9.5"
 )
 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
@@ -32,11 +31,13 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic",
   "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
-libraryDependencies += "io.spray" %%  "spray-json" % "1.3.3"
-
+libraryDependencies += "io.spray" %% "spray-json" % "1.3.3"
 
 // Enable SAM
 scalacOptions := Seq("-Xexperimental", "-unchecked", "-deprecation")
 
 // Executer les tests en séquentiel
 parallelExecution in Test := false
+
+resolvers += "confluent" at "https://packages.confluent.io/maven/"
+resolvers += Resolver.sonatypeRepo("public")

@@ -1,4 +1,4 @@
-package versatile.kafka
+package versatile.kafka.producer
 
 import org.apache.kafka.clients.producer.{Callback, RecordMetadata}
 

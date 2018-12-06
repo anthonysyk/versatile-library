@@ -1,6 +1,6 @@
 package versatile.kafka.serde
 
-import org.apache.kafka.common.serialization.{Serde, Serdes}
+import org.apache.kafka.common.serialization.{Deserializer, Serde, Serdes, Serializer}
 
 /**
   * Implicit values for default serdes
@@ -14,12 +14,12 @@ object DefaultSerdes {
   implicit val doubleSerde: Serde[Double] = Serdes.Double().asInstanceOf[Serde[Double]]
   implicit val integerSerde: Serde[Int] = Serdes.Integer().asInstanceOf[Serde[Int]]
 
-  implicit val stringSerializer = stringSerde.serializer()
-  implicit val integerSerializer = integerSerde.serializer()
-  implicit val byteArraySerializer = byteArraySerde.serializer()
+  implicit val stringSerializer: Serializer[String] = stringSerde.serializer()
+  implicit val integerSerializer: Serializer[Int] = integerSerde.serializer()
+  implicit val byteArraySerializer: Serializer[Array[Byte]] = byteArraySerde.serializer()
 
-  implicit val stringDeserializer = stringSerde.deserializer()
-  implicit val integerDeserializer = integerSerde.deserializer()
-  implicit val byteArrayDeserializer = byteArraySerde.deserializer()
+  implicit val stringDeserializer: Deserializer[String] = stringSerde.deserializer()
+  implicit val integerDeserializer: Deserializer[Int] = integerSerde.deserializer()
+  implicit val byteArrayDeserializer: Deserializer[Array[Byte]] = byteArraySerde.deserializer()
 
 }

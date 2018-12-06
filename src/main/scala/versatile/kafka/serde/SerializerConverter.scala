@@ -1,6 +1,5 @@
-package versatile.kafka
+package versatile.kafka.serde
 
-import com.lightbend.kafka.scala.streams.DefaultSerdes
 import org.apache.kafka.common.serialization.{ByteArraySerializer, IntegerSerializer, Serializer, StringSerializer}
 
 trait SerializerConverter[T] {
