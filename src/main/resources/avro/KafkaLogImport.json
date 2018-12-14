@@ -1,0 +1,3 @@
+{
+  "schema" : "{\"type\":\"record\",\"name\":\"KafkaLog\",\"namespace\":\"versatile.kafka.models\",\"fields\":[{\"name\":\"sender\",\"type\":\"string\"},{\"name\":\"zone_date_time\",\"type\":\"string\"},{\"name\":\"offset\",\"type\":[\"null\",\"long\"]},{\"name\":\"topic\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"exception\",\"type\":[\"null\",\"string\"]},{\"name\":\"isSuccess\",\"type\":\"boolean\"}]}"
+}

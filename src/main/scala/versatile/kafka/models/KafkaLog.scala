@@ -14,7 +14,9 @@ case class KafkaLog(
                      exception: Option[String],
                      isSuccess: Boolean
                    ) {
-  def toRecord[K](topic: String, key: K) = new ProducerRecord[K, String](topic, key, this.asJson.noSpaces)
+  val kafkaLog: KafkaLog = this
+
+  def toRecord[K](topic: String, key: String): ProducerRecord[String, String] = new ProducerRecord[String, String](topic, key, kafkaLog.asJson.noSpaces)
 }
 
 object KafkaLog {

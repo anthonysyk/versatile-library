@@ -2,41 +2,38 @@ package versatile.kafka.producer
 
 import java.util.Properties
 
+import io.confluent.kafka.serializers.KafkaAvroSerializer
+import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer._
 import org.apache.kafka.common.serialization.StringSerializer
 import versatile.kafka.models.KafkaLog
-import versatile.kafka.serde.SerializerConverter
 
-/**
-  *
-  * @tparam K : can be any primitive type
-  * @tparam V : should always be either String or Array[Byte]
-  */
-abstract class KafkaProducerHelper[K, V](implicit keySerializerConverter: SerializerConverter[K], valueSerializerConverter: SerializerConverter[V]) {
+abstract class KafkaProducerHelper {
 
   val topic: String
   val sender: String
 
-  def keySerializer: String = keySerializerConverter.value
-  def valueSerializer: String = valueSerializerConverter.value
-
   lazy val logsTopic: String = s"$topic.logs"
   lazy val bootstrapServer: String = "localhost:9092"
   lazy val clientId: String = Seq(sender, topic).mkString("_")
+  lazy val avroSerializer: String = classOf[KafkaAvroSerializer].getName
+  lazy val stringSerializer: String = classOf[StringSerializer].getName
 
-  def createProperties(keySer: String, valueSer: String): Properties = {
+  def createProperties: Properties = {
     val props = new java.util.Properties()
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer)
     props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId)
-    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySer)
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSer)
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, stringSerializer)
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, avroSerializer)
+    props.put("schema.registry.url", "http://localhost:8081")
     props
   }
 
-  val producer = new KafkaProducer[K, V](createProperties(keySerializer, valueSerializer))
-  val logsProducer = new KafkaProducer[K, String](createProperties(keySerializer, classOf[StringSerializer].getName))
 
-  private def createLog(record: ProducerRecord[K, V]) = {
+  val producer = new KafkaProducer[String, GenericRecord](createProperties)
+  val logsProducer = new KafkaProducer[String, String](createProperties)
+
+  private def createLog(record: ProducerRecord[String, GenericRecord]) = {
     KafkaUtils.createCallbackProducer(
       onError = { exception =>
         val errorMessage = s"[Failure] Event with key ${record.key} and value ${record.value()}"
@@ -52,6 +49,6 @@ abstract class KafkaProducerHelper[K, V](implicit keySerializerConverter: Serial
     )
   }
 
-  def sendEventWithLogs(record: ProducerRecord[K, V]): Unit = producer.send(record, createLog(record))
+  def sendEventWithLogs(record: ProducerRecord[String, GenericRecord]): Unit = producer.send(record, createLog(record))
 
 }
