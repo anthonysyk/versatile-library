@@ -56,7 +56,7 @@ object KafkaRawEvent {
   def create(
               source: String,
               offset: Option[Long],
-              value: Json
+              value: String
             ): KafkaRawEvent = {
     val now = new DateTime()
 
@@ -64,7 +64,7 @@ object KafkaRawEvent {
       source = source,
       event_timestamp = now.getMillis,
       readable_date = now.toString,
-      event_raw = value.noSpaces,
+      event_raw = value,
       offset = offset,
       year = now.getYear
     )

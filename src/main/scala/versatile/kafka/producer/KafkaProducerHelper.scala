@@ -38,13 +38,13 @@ abstract class KafkaProducerHelper {
       onError = { exception =>
         val errorMessage = s"[Failure] Event with key ${fullRecord.key.noSpaces} and value ${fullRecord.value.noSpaces} \n$exception"
         println(errorMessage)
-        val rawRecord = KafkaRawEvent.create(source = fullRecord.source.getOrElse(source), offset = None, value = fullRecord.value)
+        val rawRecord = KafkaRawEvent.create(source = fullRecord.source.getOrElse(source), offset = None, value = fullRecord.value.noSpaces)
         .toRecord(rawEventTopic)
         rawEventProducer.send(rawRecord)
       },
       onSuccess = { metadata =>
         val successMessage = s"[Success] Event with key: ${fullRecord.key.noSpaces} was sent successfully at offset: ${metadata.offset()}"
-        val rawRecord = KafkaRawEvent.create(source = fullRecord.source.getOrElse(source), offset = Some(metadata.offset()), value = fullRecord.value)
+        val rawRecord = KafkaRawEvent.create(source = fullRecord.source.getOrElse(source), offset = Some(metadata.offset()), value = fullRecord.value.noSpaces)
             .toRecord(rawEventTopic)
         rawEventProducer.send(rawRecord)
       }
@@ -55,7 +55,7 @@ abstract class KafkaProducerHelper {
 
   def sendEvent(record: ProducerRecord[GenericRecord, GenericRecord]): Future[RecordMetadata] = producer.send(record)
 
-  def sendEventRaw(value: Json): Future[RecordMetadata] = {
+  def sendEventRaw(value: String): Future[RecordMetadata] = {
     val record = KafkaRawEvent.create(source = source, offset = None, value = value)
       .toRecord(rawEventTopic)
     rawEventProducer.send(record)
