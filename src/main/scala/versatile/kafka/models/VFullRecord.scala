@@ -7,6 +7,5 @@ import org.apache.kafka.clients.producer.ProducerRecord
 case class VFullRecord(
                         source: Option[String],
                         record: ProducerRecord[GenericRecord, GenericRecord],
-                        key: Json,
                         value: Json
                       )
