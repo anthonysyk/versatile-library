@@ -3,7 +3,6 @@ package versatile.kafka.producer
 import java.util.Properties
 import java.util.concurrent.Future
 
-import io.circe.Json
 import io.confluent.kafka.serializers.KafkaAvroSerializer
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer._
@@ -54,9 +53,9 @@ abstract class KafkaProducerHelper {
 
   def sendEvent(record: ProducerRecord[GenericRecord, GenericRecord]): Future[RecordMetadata] = producer.send(record)
 
-  def sendEventRaw(maybeSource: Option[String], value: String): Future[RecordMetadata] = {
+  def sendEventRaw(maybeSource: Option[String], value: String, topic: Option[String] = None): Future[RecordMetadata] = {
     val record = KafkaRawEvent.create(source = maybeSource.getOrElse(source), offset = None, value = value)
-      .toRecord(rawEventTopic)
+      .toRecord(topic.getOrElse(rawEventTopic))
     rawEventProducer.send(record)
   }
 
