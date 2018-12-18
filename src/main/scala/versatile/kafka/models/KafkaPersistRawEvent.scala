@@ -9,62 +9,65 @@ import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.joda.time.DateTime
 
-case class KafkaRawEventKey(
+case class KafkaPersistEventKey(
                              year: Int,
                              event_timestamp: Long,
                              event_id: String
                            )
 
-object KafkaRawEventKey {
+object KafkaPersistEventKey {
 
   import io.circe.Decoder
   import io.circe.generic.semiauto.deriveDecoder
 
-  implicit val encoder: Encoder[KafkaRawEventKey] = deriveEncoder[KafkaRawEventKey]
-  implicit val decoder: Decoder[KafkaRawEventKey] = deriveDecoder[KafkaRawEventKey]
+  implicit val encoder: Encoder[KafkaPersistEventKey] = deriveEncoder[KafkaPersistEventKey]
+  implicit val decoder: Decoder[KafkaPersistEventKey] = deriveDecoder[KafkaPersistEventKey]
 
-  val format: RecordFormat[KafkaRawEventKey] = RecordFormat[KafkaRawEventKey]
+  val format: RecordFormat[KafkaPersistEventKey] = RecordFormat[KafkaPersistEventKey]
 
 }
 
-case class KafkaRawEvent(
+case class KafkaPersistRawEvent(
                           source: String,
                           event_timestamp: Long,
                           readable_date: String,
                           event_raw: String,
+                          event_type: String,
                           offset: Option[Long],
                           year: Int,
                           event_id: String = UUID.randomUUID().toString
                         ) {
-  val key = KafkaRawEventKey(year, event_timestamp, event_id)
-  val value: KafkaRawEvent = this
+  val key = KafkaPersistEventKey(year, event_timestamp, event_id)
+  val value: KafkaPersistRawEvent = this
 
   def toRecord[K](topic: String): ProducerRecord[GenericRecord, GenericRecord] =
-    new ProducerRecord[GenericRecord, GenericRecord](topic, KafkaRawEventKey.format.to(key), KafkaRawEvent.format.to(value))
+    new ProducerRecord[GenericRecord, GenericRecord](topic, KafkaPersistEventKey.format.to(key), KafkaPersistRawEvent.format.to(value))
 }
 
-object KafkaRawEvent {
+object KafkaPersistRawEvent {
 
   import io.circe._
   import io.circe.generic.semiauto._
 
-  implicit val encoder: Encoder[KafkaRawEvent] = deriveEncoder[KafkaRawEvent]
-  implicit val decoder: Decoder[KafkaRawEvent] = deriveDecoder[KafkaRawEvent]
+  implicit val encoder: Encoder[KafkaPersistRawEvent] = deriveEncoder[KafkaPersistRawEvent]
+  implicit val decoder: Decoder[KafkaPersistRawEvent] = deriveDecoder[KafkaPersistRawEvent]
 
-  val format: RecordFormat[KafkaRawEvent] = RecordFormat[KafkaRawEvent]
+  val format: RecordFormat[KafkaPersistRawEvent] = RecordFormat[KafkaPersistRawEvent]
 
   def create(
               source: String,
+              eventType: String,
               offset: Option[Long],
               value: String
-            ): KafkaRawEvent = {
+            ): KafkaPersistRawEvent = {
     val now = new DateTime()
 
-    KafkaRawEvent(
+    KafkaPersistRawEvent(
       source = source,
       event_timestamp = now.getMillis,
       readable_date = now.toString,
       event_raw = value,
+      event_type = eventType,
       offset = offset,
       year = now.getYear
     )
