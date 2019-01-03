@@ -11,6 +11,8 @@ import org.joda.time.DateTime
 
 case class KafkaPersistEventKey(
                              year: Int,
+                             month: Int,
+                             day: Int,
                              event_timestamp: Long,
                              event_id: String
                            )
@@ -35,9 +37,11 @@ case class KafkaPersistRawEvent(
                           event_type: String,
                           offset: Option[Long],
                           year: Int,
+                          month: Int,
+                          day: Int,
                           event_id: String = UUID.randomUUID().toString
                         ) {
-  val key = KafkaPersistEventKey(year, event_timestamp, event_id)
+  val key = KafkaPersistEventKey(year, month, day, event_timestamp, event_id)
   val value: KafkaPersistRawEvent = this
 
   def toRecord[K](topic: String): ProducerRecord[GenericRecord, GenericRecord] =
@@ -69,7 +73,9 @@ object KafkaPersistRawEvent {
       event_raw = value,
       event_type = eventType,
       offset = offset,
-      year = now.getYear
+      year = now.getYear,
+      month = now.getMonthOfYear,
+      day = now.getDayOfMonth
     )
   }
 
