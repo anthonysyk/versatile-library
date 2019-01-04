@@ -12,7 +12,6 @@ object Base64Helper {
       def toBase64String: String = Base64.encodeBase64String(string.getBytes())
 
       def fromBase64String: Try[String] = Try(Base64.decodeBase64(string)).map(bytes => new String(bytes, "UTF-8"))
-
     }
 
   }
