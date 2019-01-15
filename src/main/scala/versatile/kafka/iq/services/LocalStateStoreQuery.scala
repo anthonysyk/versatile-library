@@ -6,13 +6,14 @@ package services
   */
 
 import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.state.{QueryableStoreType, QueryableStoreTypes, ReadOnlyKeyValueStore, ReadOnlyWindowStore}
+import org.apache.kafka.streams.state._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import com.typesafe.scalalogging.LazyLogging
 import akka.actor.ActorSystem
+import org.apache.kafka.streams.kstream.Windowed
 
 /**
   * Abstraction that supports query from a local state store. The query supports retry semantics if
@@ -104,5 +105,21 @@ class LocalStateStoreQuery[K, V] extends LazyLogging {
         .toList
         .map(kv => (Long2long(kv.key), kv.value)))
   }
+
+  /**
+    * Query all window
+    */
+  def queryWindowedStoreForAll(streams: KafkaStreams, store: String, fromTime: Long, toTime: Long)
+                           (implicit ex: ExecutionContext, as: ActorSystem): Future[List[(Long, V)]] = {
+
+    val q: QueryableStoreType[ReadOnlyWindowStore[K, V]] = QueryableStoreTypes.windowStore()
+    _retry(streams.store(store, q)).map { rs =>
+      val kvi = rs.fetchAll(fromTime, toTime)
+      val kvs = kvi.asScala.toList.map(kv => (Long2long(kv.key.window().start()), kv.value))
+      kvi.close()
+      kvs
+    }
+  }
+
 }
 

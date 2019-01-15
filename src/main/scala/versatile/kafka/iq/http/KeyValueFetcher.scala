@@ -13,6 +13,7 @@ import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
 import io.circe.Decoder
 import org.apache.kafka.common.serialization.Serializer
 import org.apache.kafka.streams.KafkaStreams
+import org.apache.kafka.streams.kstream.Windowed
 import org.apache.kafka.streams.state.HostInfo
 import versatile.kafka.iq.services.{HostStoreInfo, LocalStateStoreQuery, MetadataService}
 
@@ -161,5 +162,36 @@ class KeyValueFetcher[K: Decoder, V: Decoder](
 
   private def thisHost(host: HostStoreInfo): Boolean =
     host.host.equals(translateHostInterface(hostInfo.host)) && host.port == hostInfo.port
+
+  /**
+    * Query all windowed: Warning - this may be large depending on the data set
+    */
+  def fetchAllWindowed(store: String, path: String, fromTime: Long, toTime: Long): Future[List[(Long, V)]] = {
+
+    def fetchAllKVs(host: HostStoreInfo): Future[List[(Long, V)]] = {
+      if (!thisHost(host)) {
+
+        // host is remote - need to requery
+        httpRequester.queryFromHost[List[(Long, V)]](host, path)
+      } else {
+
+        // fetch all kvs for this local store
+        localStateStoreQuery.queryWindowedStoreForAll(streams, store, fromTime, toTime)
+      }
+    }
+
+    fetchWindowedKVs(store, fetchAllKVs)
+  }
+
+  private def fetchWindowedKVs(store: String, fn: HostStoreInfo => Future[List[(Long, V)]]): Future[List[(Long, V)]] =
+    metadataService.streamsMetadataForStore(store) match {
+
+      // metadata could not be found for this store
+      case Nil => Future.failed(new Exception(s"No metadata found for $store"))
+
+      // all hosts that have this store with the same application id
+      case hosts => Future.traverse(hosts)(fn).map(_.flatten)
+    }
+
 }
 

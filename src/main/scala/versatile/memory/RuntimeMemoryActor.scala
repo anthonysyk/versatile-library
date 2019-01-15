@@ -13,6 +13,7 @@ class RuntimeMemoryActor extends Actor {
       println("** Free Memory:  " + runtime.freeMemory / mb)
       println("** Total Memory: " + runtime.totalMemory / mb)
       println("** Max Memory:   " + runtime.maxMemory / mb)
+      println("\n")
   }
 }
 
